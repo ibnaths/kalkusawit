@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kalkulator Bunga Kredit & Produktivitas Kelapa Sawit</title>
+<style>
+:root{--bg:#f6f7f4;--card:#fff;--tx:#1d2a1f;--mu:#5d6b60;--bd:#d9ded8;--ac:#2f6b3a;--ac2:#e8f1e9;--ed:#eaf1ff;--hd:#fff3b0;--tot:#fff9d6;--warn:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121712;--card:#1b231c;--tx:#e6ece6;--mu:#9aa89c;--bd:#334034;--ac:#6fbf7c;--ac2:#243427;--ed:#1f2d44;--hd:#4a4515;--tot:#3a3711;--warn:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121712;--card:#1b231c;--tx:#e6ece6;--mu:#9aa89c;--bd:#334034;--ac:#6fbf7c;--ac2:#243427;--ed:#1f2d44;--hd:#4a4515;--tot:#3a3711;--warn:#ff8a80;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 2px}
+p.s{color:var(--mu);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--ed);border:1px solid var(--bd);border-radius:8px;padding:7px 9px}
+textarea{min-height:90px;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+button{font:inherit;cursor:pointer;border:1px solid var(--ac);background:var(--ac);color:#fff;border-radius:8px;padding:7px 12px}
+button.o{background:transparent;color:var(--ac)}
+button.x{background:transparent;border-color:var(--bd);color:var(--warn);padding:3px 8px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:13px}
+th,td{border:1px solid var(--bd);padding:5px 7px;text-align:right;white-space:nowrap}
+th{background:var(--hd);color:var(--tx);text-align:center;font-weight:600}
+td.c{text-align:center}
+td input,td select{padding:4px 6px;font-size:13px;text-align:right}
+td select{text-align:center}
+tr.tot td{background:var(--tot);font-weight:700}
+.tbm{color:var(--mu)}
+.bd{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;background:var(--ac2);color:var(--ac)}
+.bd.t{background:transparent;border:1px solid var(--bd);color:var(--mu)}
+.low{color:var(--warn);font-weight:600}
+.n{font-size:12.5px;color:var(--mu);margin:8px 0 0}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.k div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px}
+.k b{display:block;font-size:19px}.k span{font-size:12px;color:var(--mu)}
+details summary{cursor:pointer;font-weight:600}
+h2{font-size:17px;margin:0 0 8px}
+td.a,td[data-c],td[data-s],td[data-u]{background:var(--ac2)}
+td.e,td:has(>input),td:has(>select){background:var(--ed)}
+.lg{display:inline-block;padding:1px 10px;border-radius:6px;border:1px solid var(--bd);font-size:12px;color:var(--tx)}
+td.l{text-align:left}
+.ok{color:var(--ac);font-weight:600}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.nav a{border:1px solid var(--bd);border-radius:99px;padding:3px 12px;color:var(--ac);text-decoration:none;font-size:13px;background:var(--card)}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>Kalkulator Bunga Kredit & Produktivitas Kelapa Sawit</h1>
+<p class='s'>Empat kalkulator dalam satu halaman. <span class='lg' style='background:var(--ed)'>Biru = diisi sendiri</span> <span class='lg' style='background:var(--ac2)'>Hijau = otomatis</span></p><div class='nav'><a href='#ic'>1. Bunga kredit</a><a href='#pcard'>2. Produktivitas sawit</a><a href='#uc'>3. Utilisasi PKS</a><a href='#rj'>4. Rekap penjualan</a></div>
+
+<div class="card" id="ic">
+<h2>1. Bunga kredit (harian, bulanan, tahunan)</h2>
+<div class="g" style="margin-top:10px">
+<div><label>Kredit limit (Rp)</label><input id="i_l" type="number" step="any" value="100000000000"></div>
+<div><label>Outstanding / baki debet (Rp) – kosongkan = sama dengan limit</label><input id="i_o" type="number" step="any" placeholder="sama dengan limit"></div>
+<div><label>Suku bunga (% per tahun)</label><input id="i_r" type="number" step="any" value="9.5"></div>
+<div><label>Basis hari dalam setahun</label><select id="i_b"><option value="360" selected>360 hari</option><option value="365">365 hari</option></select></div>
+<div><label>Metode bunga bulanan</label><select id="i_m"><option value="akt" selected>Harian × hari kalender bulan (aktual)</option><option value="30">Harian × 30 hari</option><option value="12">Bunga tahunan ÷ 12</option></select></div>
+<div><label>Bulan yang dihitung (tahun mengikuti tahun perhitungan)</label><select id="i_bl"></select></div>
+<div><label>Periode kustom (jumlah hari)</label><input id="i_h" type="number" value="90"></div>
+</div>
+<div class="k" style="margin-top:12px">
+<div><b id="r1">–</b><span>Bunga per hari</span></div>
+<div><b id="r2">–</b><span id="r2l">Bunga per bulan</span></div>
+<div><b id="r3">–</b><span>Bunga per tahun</span></div>
+<div><b id="r4">–</b><span id="r4l">Bunga periode kustom</span></div>
+</div>
+<p class="n" id="inote"></p>
+<p class="n">Rumus: bunga harian = outstanding × suku bunga ÷ basis hari. Bunga tahunan = outstanding × suku bunga. Perhitungan memakai bunga sederhana (tanpa kapitalisasi) dan belum memperhitungkan pergerakan outstanding selama periode.</p>
+</div>
+
+<div class="card" id="pcard">
+<h2>2. Produktivitas kelapa sawit (standar PPKS)</h2>
+<div class="g">
+<div><label>Debitur / kebun</label><input id="deb" value="PT Nusantara Sawit Persada"></div>
+<div><label>Tahun perhitungan</label><input id="thn" type="number" value="2026"></div>
+<div><label>Periode (Januari s.d. bulan)</label><select id="bln"></select></div>
+<div><label>Kesesuaian lahan (default semua baris)</label><select id="kl"><option>S1</option><option>S2</option><option selected>S3</option></select></div>
+<div><label>Umur mulai TM (tahun sejak tanam)</label><select id="tms"><option value="4" selected>4 – TM1 saat umur 4 (sesuai template)</option><option value="3">3 – TM1 saat umur 3 (sesuai tabel PPKS)</option></select></div>
+</div>
+<p class="n">Standar PPKS (ton/ha/tahun) × bulan ÷ 12 = standar periode. Contoh: S3 umur 17 tahun = 26,0 ton/ha/tahun, periode 6 bulan menjadi 13,0 ton/ha. Tanaman TBM tidak dihitung standar produksinya. Umur di atas 25 tahun memakai standar umur 25.</p>
+</div>
+
+<div class="k">
+<div><b id="k1">–</b><span>Luas TM (ha)</span></div>
+<div><b id="k2">–</b><span>Realisasi produksi (ton)</span></div>
+<div><b id="k3">–</b><span>Produksi PPKS (ton)</span></div>
+<div><b id="k4">–</b><span>Produksi thd PPKS</span></div>
+</div>
+
+<div class="card">
+<div class="sc"><table>
+<thead><tr><th rowspan="2">Tahun tanam</th><th rowspan="2">Luas (ha)</th><th rowspan="2">Realisasi produksi (ton)</th><th rowspan="2">Kesesuaian lahan</th><th rowspan="2">Umur</th><th rowspan="2">Status</th><th colspan="4">Hasil periode</th><th rowspan="2"></th></tr>
+<tr><th>Produksi per ha (ton)</th><th>Standar PPKS (ton/ha)</th><th>Produksi thd PPKS (%)</th><th>Produksi PPKS (ton)</th></tr></thead>
+<tbody id="tb"></tbody>
+<tfoot id="tf"></tfoot>
+</table></div>
+<div class="bar">
+<button id="add">+ Tambah baris</button>
+<button class="o" id="demo">Muat contoh template</button>
+<button class="o" id="clr">Kosongkan</button>
+<button class="o" id="cp">Salin hasil untuk Excel</button>
+</div>
+<p class="n" id="msg"></p>
+</div>
+
+<div class="card">
+<b>Tempel data dari Excel</b>
+<p class="n" style="margin-top:2px">Tempel 3 kolom berurutan: Tahun tanam, Luas (ha), Realisasi produksi (ton). Baris judul akan dilewati otomatis.</p>
+<textarea id="ta" placeholder="2009&#9;316.87&#9;3,965&#10;2010&#9;349.45&#9;4,110"></textarea>
+<div class="g" style="margin-top:8px;align-items:end">
+<div><label>Format angka yang ditempel</label><select id="pf"><option value="en">Titik desimal (1,234.56)</option><option value="id">Koma desimal (1.234,56)</option></select></div>
+<div><label>Format angka saat salin hasil</label><select id="cf"><option value="id">Koma desimal (Excel Indonesia)</option><option value="en">Titik desimal (Excel English)</option></select></div>
+<div><button id="imp">Impor data</button></div>
+</div>
+</div>
+
+<div class='card' id='uc'>
+<h2>3. Utilisasi PKS</h2>
+<p class='n' style='margin:0 0 6px'>Mengukur seberapa penuh pabrik kelapa sawit (PKS) dipakai. <b>Utilisasi = total TBS yang diolah ÷ kemampuan olah maksimal pabrik.</b> Satu kolom = satu periode. Sumber TBS dibagi 4 kelompok. Nama tiap baris (misalnya nama perusahaan) bisa diganti, baris ditambah lewat tombol + di bawah tabel, dan dihapus dengan ✕.</p>
+<p class='n' style='margin:0 0 10px'><span class='lg' style='background:var(--ed)'>Biru = diisi sendiri</span> <span class='lg' style='background:var(--ac2)'>Hijau = otomatis, tidak bisa diedit</span></p>
+<div class='sc'><table style='min-width:640px'><tbody id='ut_t'></tbody></table></div>
+<div class='bar'><button class='o' data-uadd='inti'>+ Kebun inti</button><button class='o' data-uadd='af'>+ Perusahaan afiliasi</button><button class='o' data-uadd='pl'>+ Plasma / poktan</button><button class='o' data-uadd='lu'>+ Pihak luar</button></div>
+<div class='bar'><button id='ut_add'>+ Tambah periode</button><button class='o' id='ut_del'>Hapus periode terakhir</button><button class='o' id='ut_demo'>Muat contoh</button><button class='o' id='ut_cp'>Salin untuk Excel</button></div>
+<p class='n' id='ut_msg'></p>
+</div>
+
+<div class='card' id='rj'>
+<h2>4. Rekap penjualan (CPO, PK, TBS)</h2>
+<p class='n' style='margin:0 0 10px'>Isi tonase dan nilai penjualan (Rp juta) tiap periode. <b>Harga (Rp/kg) = nilai × 1.000 ÷ tonase.</b> Growth = perubahan nilai dibanding periode pembanding yang dipilih di kolom paling kanan (misalnya Jun-26 dibanding Jun-25). Total penjualan = nilai CPO + PK + TBS.</p>
+<div class='sc'><table style='min-width:1250px'><thead><tr><th rowspan='2'>Periode</th><th colspan='4'>CPO</th><th colspan='4'>PK</th><th colspan='4'>TBS</th><th rowspan='2'>Total penjualan (Rp juta)</th><th rowspan='2'>Growth total (%)</th><th rowspan='2'>Growth dibanding</th><th rowspan='2'></th></tr><tr><th>Tonase</th><th>Nilai (Rp juta)</th><th>Harga (Rp/kg)</th><th>Growth nilai</th><th>Tonase</th><th>Nilai (Rp juta)</th><th>Harga (Rp/kg)</th><th>Growth nilai</th><th>Tonase</th><th>Nilai (Rp juta)</th><th>Harga (Rp/kg)</th><th>Growth nilai</th></tr></thead><tbody id='sl_t'></tbody></table></div>
+<div class='bar'><button id='sl_add'>+ Tambah periode</button><button class='o' id='sl_demo'>Muat contoh</button><button class='o' id='sl_cp'>Salin untuk Excel</button></div>
+<p class='n' id='sl_msg'></p>
+</div>
+
+<div class="card">
+<details><summary>Tabel standar produksi TBS PPKS (ton/ha/tahun)</summary>
+<div class="sc" style="margin-top:10px"><table style="min-width:320px;max-width:420px"><thead><tr><th>Umur</th><th>S1</th><th>S2</th><th>S3</th></tr></thead><tbody id="ref"></tbody></table></div>
+</details>
+</div>
+<footer style="text-align:center;color:var(--mu);font-size:13px;padding:8px 0 16px;border-top:1px solid var(--bd)">Dibuat oleh <b style="color:var(--tx)">Muhamad Ibnu Athaillah</b> · NIP 2603880659</footer>
+</div>
+
+<script>
+const S={S1:[6,16,19,23,28,32,34,35,35,35,34,33,32,30.5,29,28,27,26,25.5,25,24,23,22.5],
+S2:[5,14,17,21,26,28,30,31,32,32,32,31,30,28.5,27.5,27,26,25,24,23,22,21.5,21],
+S3:[4,12,15,19,23,26,27,28,29,30,30,29.5,28.5,27,26,25,24,23,22,21,20,19.5,19.5]};
+const BL=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const DEMO=[[2009,316.87,3965],[2010,349.45,4110],[2011,2077.84,23489],[2012,4357.12,46188],[2013,3018.03,30487.75],[2014,1133,10330.73],[2015,550.69,4488.87],[2016,341.02,2243.5],[2017,70.56,486.07],[2018,59.56,315.65],[2019,0,0],[2020,20.41,53.65],[2021,15.81,27.25],[2022,0,0],[2023,67.75,0],[2024,39.71,0],[2025,0,0],[2026,0,0]];
+const $=id=>document.getElementById(id);
+let rows=[];
+const std=(a,k)=>a<3?0:S[k][Math.min(a,25)-3];
+const f=(v,d=2)=>isFinite(v)?v.toLocaleString("id-ID",{minimumFractionDigits:d,maximumFractionDigits:d}):"–";
+$("bln").innerHTML=BL.map((b,i)=>`<option value="${i+1}"${i==5?" selected":""}>${i+1} – ${b}</option>`).join("");
+$("ref").innerHTML=Array.from({length:23},(_,i)=>`<tr><td class="c">${i+3}</td><td>${f(S.S1[i],1)}</td><td>${f(S.S2[i],1)}</td><td>${f(S.S3[i],1)}</td></tr>`).join("");
+
+function calc(r){
+  const Y=+$("thn").value,m=+$("bln").value,ts=+$("tms").value,k=r.kl||$("kl").value;
+  const a=Y-r.th, o={a,k};
+  if(!isFinite(a)||a<0){o.st="Belum tanam";o.tm=false;o.s=0;return o}
+  o.tm=a>=ts;
+  o.st=o.tm?"TM "+(a-ts+1):"TBM "+a;
+  o.s=o.tm?std(a,k)*m/12:0;
+  o.pp=o.s*r.lu;
+  o.ph=r.lu>0?r.re/r.lu:0;
+  o.pc=o.s>0?r.ph_/o.s:0;
+  return o;
+}
+function build(){
+  $("tb").innerHTML=rows.map((r,i)=>`<tr data-i="${i}">
+  <td><input type="number" data-f="th" value="${r.th}" style="width:80px"></td>
+  <td><input type="number" step="any" data-f="lu" value="${r.lu}" style="width:100px"></td>
+  <td><input type="number" step="any" data-f="re" value="${r.re}" style="width:120px"></td>
+  <td class="c"><select data-f="kl"><option value="">Default</option><option>S1</option><option>S2</option><option>S3</option></select></td>
+  <td class="c" data-c="a"></td><td class="c" data-c="st"></td><td data-c="ph"></td><td data-c="s"></td><td data-c="pc"></td><td data-c="pp"></td>
+  <td class="c"><button class="x" data-del="${i}">✕</button></td></tr>`).join("");
+  [...$("tb").rows].forEach((tr,i)=>tr.querySelector("select").value=rows[i].kl||"");
+  upd();
+}
+function upd(){
+  let L=0,LT=0,R=0,P=0;
+  [...$("tb").rows].forEach((tr,i)=>{
+    const r=rows[i],o=calc(r);
+    const ok=isFinite(o.a)&&o.a>=0;
+    const set=(c,v,h)=>{const e=tr.querySelector(`[data-c="${c}"]`);if(h)e.innerHTML=v;else e.textContent=v};
+    set("a",ok?o.a:"–");
+    set("st",`<span class="bd${o.tm?"":" t"}">${o.st}</span>`,1);
+    if(o.tm&&r.lu>0){
+      const pc=o.s>0?r.re/(o.s*r.lu):0;
+      set("ph",f(o.ph));set("s",f(o.s));
+      set("pc",`<span class="${pc<.6?"low":""}">${f(pc*100)}%</span>`,1);
+      set("pp",f(o.pp));
+      LT+=r.lu;P+=o.pp;
+    }else{
+      set("ph",r.lu>0?f(o.ph||0):"-");set("s","-");set("pc","-");set("pp","-");
+    }
+    L+=r.lu;R+=r.re;
+  });
+  const ph=LT>0?R/LT:0,sd=LT>0?P/LT:0,pc=P>0?R/P:0;
+  $("tf").innerHTML=`<tr class="tot"><td>TOTAL</td><td>${f(L)}</td><td>${f(R)}</td><td colspan="3" class="c">Luas TM: ${f(LT)} ha</td><td>${f(ph)}</td><td>${f(sd)}</td><td>${f(pc*100)}%</td><td>${f(P)}</td><td></td></tr>`;
+  $("k1").textContent=f(LT);$("k2").textContent=f(R);$("k3").textContent=f(P);$("k4").textContent=f(pc*100)+"%";
+}
+function fix(){rows.forEach(r=>{r.th=+r.th||0;r.lu=+r.lu||0;r.re=+r.re||0})}
+document.addEventListener("input",e=>{
+  const t=e.target,tr=t.closest("#tb tr");
+  if(tr&&t.dataset.f){rows[+tr.dataset.i][t.dataset.f]=t.dataset.f==="kl"?t.value:(t.value===""?0:+t.value);upd()}
+  else if(["thn","bln","kl","tms"].includes(t.id))upd();
+});
+$("tb").addEventListener("click",e=>{const d=e.target.dataset.del;if(d!==undefined){rows.splice(+d,1);build()}});
+$("add").onclick=()=>{const y=rows.length?Math.max(...rows.map(r=>r.th))+1:+$("thn").value;rows.push({th:y,lu:0,re:0,kl:""});build()};
+$("demo").onclick=()=>{rows=DEMO.map(d=>({th:d[0],lu:d[1],re:d[2],kl:""}));$("deb").value="PT Nusantara Sawit Persada";build();$("msg").textContent="Contoh template dimuat. Hasilnya cocok dengan tabel Excel Anda (periode Juni 2026, S3)."};
+$("clr").onclick=()=>{rows=[];build();$("msg").textContent=""};
+function num(s,fm){
+  s=String(s).trim().replace(/\s/g,"");
+  if(!s||s==="-")return 0;
+  s=fm==="id"?s.replace(/\./g,"").replace(",","."):s.replace(/,/g,"");
+  const v=parseFloat(s);return isFinite(v)?v:NaN;
+}
+$("imp").onclick=()=>{
+  const fm=$("pf").value,out=[];
+  $("ta").value.split(/\r?\n/).forEach(l=>{
+    if(!l.trim())return;
+    const c=l.split("\t");if(c.length<2)return;
+    const th=num(c[0],fm);
+    if(!isFinite(th)||th<1900||th>2100)return;
+    out.push({th,lu:num(c[1],fm)||0,re:num(c[2]||0,fm)||0,kl:""});
+  });
+  if(!out.length){$("msg").textContent="Tidak ada baris valid. Pastikan kolom dipisah tab (salin langsung dari Excel).";return}
+  rows=out;build();$("msg").textContent=out.length+" baris diimpor.";
+};
+$("cp").onclick=()=>{
+  const id=$("cf").value==="id",fmt=v=>{const s=(Math.round(v*100)/100).toString();return id?s.replace(".",","):s};
+  const lines=[["Tahun Tanam","Luas (Ha)","TM ke","Realisasi Produksi (ton)","Produksi per Ha (ton)","Standar PPKS (ton)","Produksi thd PPKS (%)","Produksi PPKS (ton)"].join("\t")];
+  rows.forEach(r=>{
+    const o=calc(r),tm=o.tm&&r.lu>0;
+    lines.push([r.th,fmt(r.lu),o.st,fmt(r.re),fmt(o.ph||0),tm?fmt(o.s):"-",tm&&o.s>0?fmt(r.re/(o.s*r.lu)*100)+"%":"-",tm?fmt(o.pp):"-"].join("\t"));
+  });
+  const txt=lines.join("\n");
+  const done=()=>$("msg").textContent="Hasil disalin. Tempel (Ctrl+V) di Excel.";
+  const fb=()=>{$("ta").value=txt;$("ta").select();try{document.execCommand("copy");done()}catch(e){$("msg").textContent="Salin manual dari kotak di bawah."}};
+  try{navigator.clipboard.writeText(txt).then(done,fb)}catch(e){fb()}
+};
+rows=DEMO.map(d=>({th:d[0],lu:d[1],re:d[2],kl:""}));
+build();
+
+$("i_bl").innerHTML=BL.map((b,i)=>`<option value="${i+1}">${b}</option>`).join("");
+$("i_bl").value=$("bln").value;
+function bunga(){
+  const L=+$("i_l").value||0,O=$("i_o").value===""?L:(+$("i_o").value||0);
+  const r=(+$("i_r").value||0)/100,b=+$("i_b").value,m=$("i_m").value,bl=+$("i_bl").value;
+  const th=+$("thn").value||new Date().getFullYear(),hk=+$("i_h").value||0;
+  const hr=O*r/b,hb=m==="akt"?new Date(th,bl,0).getDate():30;
+  const bln=m==="12"?O*r/12:hr*hb;
+  const rp=v=>"Rp "+f(v,0);
+  $("r1").textContent=rp(hr);
+  $("r2").textContent=rp(bln);
+  $("r2l").textContent="Bunga per bulan ("+BL[bl-1]+(m==="12"?"":", "+hb+" hari")+")";
+  $("r3").textContent=rp(O*r);
+  $("r4").textContent=rp(hr*hk);
+  $("r4l").textContent="Bunga "+hk+" hari";
+  $("inote").textContent="Utilisasi limit: "+(L>0?f(O/L*100):"–")+"% (outstanding Rp "+f(O,0)+" dari limit Rp "+f(L,0)+").";
+}
+$("ic").addEventListener("input",bunga);
+$("thn").addEventListener("input",bunga);
+bunga();
+
+let uid=10;
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/</g,'&lt;');
+function setA(e,v,d,s){const ok=isFinite(v);e.textContent=ok?f(v,d)+(s||''):'-';e.dataset.raw=ok?v:''}
+function setG(e,v){const ok=isFinite(v);e.dataset.raw=ok?v:'';e.innerHTML=ok?`<span class='${v<0?'low':''}'>${v>0?'+':''}${f(v)}%</span>`:'-'}
+function copyT(tid,hdr,skip,mid){
+  const idf=$('cf').value==='id',cv=s=>idf?String(s).replace('.',','):String(s);
+  const L=[...$(tid).rows].map(tr=>{let cs=[...tr.cells];if(skip)cs=cs.slice(0,-1);return cs.map(c=>{const i=c.querySelector('input,select');if(i)return i.tagName==='SELECT'?i.options[i.selectedIndex].text:(i.type==='number'?cv(i.value):i.value);if(c.dataset.raw!==undefined)return c.dataset.raw===''?'-':cv(Math.round(+c.dataset.raw*100)/100);return c.textContent.trim()}).join('\t')});
+  if(hdr)L.unshift(hdr.join('\t'));
+  const txt=L.join('\n'),ok=()=>$(mid).textContent='Tabel disalin. Tempel (Ctrl+V) di Excel.';
+  const fb=()=>{$('ta').value=txt;$('ta').select();try{document.execCommand('copy');ok()}catch(e){$(mid).textContent='Gagal menyalin otomatis.'}};
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}
+}
+document.querySelectorAll('.nav a').forEach(a=>a.onclick=e=>{e.preventDefault();$(a.getAttribute('href').slice(1)).scrollIntoView({behavior:'smooth'})});
+
+/* ===== 3. Utilisasi PKS ===== */
+const UG=[['inti','Kebun Inti'],['af','Kebun Afiliasi'],['pl','Kebun Plasma & Poktan'],['lu','Kebun Pihak Luar']];
+const UNEW={inti:'Kebun inti baru',af:'Perusahaan afiliasi baru',pl:'Plasma / poktan baru',lu:'Pihak luar baru'};
+const UDEF=[['inti','Kebun inti'],['af','BSP'],['af','PMM'],['pl','Plasma & Poktan'],['lu','Pihak luar']];
+const UP=[['2021',60,300,24,[233768,123257,32795,3888,8297],88025,18083],['2022',60,300,24,[226612,116988,32486,4464,892],82862,15617],['Dec-23',60,300,24,[242927,110801,49814,5713,0],88727,18926],['Dec-24',60,300,24,[245838,155387,0,6524,7160],53985,10918],['Dec-25',60,300,24,[284830,183501,986,9787,81],64754,14191]];
+let ul=[],up=[];
+function loadU(){ul=UDEF.map(([g,name])=>({id:++uid,g,name}));up=UP.map(a=>({n:a[0],kap:a[1],hr:a[2],jam:a[3],cpo:a[5],pk:a[6],v:Object.fromEntries(ul.map((l,i)=>[l.id,a[4][i]]))}));buildU()}
+function buildU(){
+  const lab=(t,c)=>`<td class='l ${c||''}' style='white-space:normal;min-width:270px'>${t}</td>`;
+  const inRow=(k,t)=>`<tr>${lab(t)}`+up.map((p,j)=>`<td><input type='number' step='any' data-uk='${k}' data-j='${j}' value='${p[k]}' style='width:105px'></td>`).join('')+'</tr>';
+  const aRow=(k,t,b)=>`<tr>${lab(b?`<b>${t}</b>`:t)}`+up.map((p,j)=>`<td data-u='${k}' data-j='${j}'${b?` style='font-weight:700'`:''}></td>`).join('')+'</tr>';
+  let h=`<tr>${lab('<b>Periode</b>')}`+up.map((p,j)=>`<td><input type='text' data-uk='n' data-j='${j}' value='${esc(p.n)}' style='width:95px;text-align:center'></td>`).join('')+'</tr>';
+  h+=inRow('kap','Kapasitas terpasang (ton TBS/jam)')+inRow('hr','Hari kerja per tahun')+inRow('jam','Jam kerja per hari')+aRow('pot','Potensi olah TBS (ton) = kapasitas × hari × jam',1);
+  UG.forEach(([g,t])=>{
+    h+=aRow('s_'+g,`${t} (ton TBS)`,1);
+    ul.filter(l=>l.g===g).forEach(l=>{
+      h+=`<tr><td class='l e' style='padding-left:20px'><div style='display:flex;gap:6px;align-items:center'><input type='text' data-ul='${l.id}' value='${esc(l.name)}' style='min-width:160px;text-align:left'><button class='x' data-udel='${l.id}'>✕</button></div></td>`+up.map((p,j)=>`<td><input type='number' step='any' data-uk='v' data-lid='${l.id}' data-j='${j}' value='${p.v[l.id]||0}' style='width:105px'></td>`).join('')+'</tr>';
+    });
+  });
+  h+=aRow('tot','Total TBS olah (ton) = inti + afiliasi + plasma + pihak luar',1)+aRow('ut','Utilisasi pabrik (%) = total TBS olah ÷ potensi olah',1)+aRow('st','Kondisi')+inRow('cpo','Produksi CPO (ton)')+aRow('rc','Rendemen CPO (%) = CPO ÷ total TBS olah')+inRow('pk','Produksi PK (ton)')+aRow('rk','Rendemen PK (%) = PK ÷ total TBS olah');
+  $('ut_t').innerHTML=h;updU();
+}
+function updU(){
+  up.forEach((p,j)=>{
+    const g=k=>document.querySelector(`[data-u='${k}'][data-j='${j}']`);
+    const sub={};
+    UG.forEach(([k])=>{sub[k]=ul.filter(l=>l.g===k).reduce((s,l)=>s+(p.v[l.id]||0),0);setA(g('s_'+k),sub[k],0)});
+    const pot=p.kap*p.hr*p.jam,tot=sub.inti+sub.af+sub.pl+sub.lu;
+    const ut=pot>0?tot/pot*100:NaN,rc=tot>0?p.cpo/tot*100:NaN,rk=tot>0?p.pk/tot*100:NaN;
+    setA(g('pot'),pot,0);setA(g('tot'),tot,0);setA(g('ut'),ut,2,'%');setA(g('rc'),rc,2,'%');setA(g('rk'),rk,2,'%');
+    const s=g('st'),ok=isFinite(ut),over=ut>100;
+    s.innerHTML=ok?(over?"<span class='low'>Melebihi kapasitas</span>":"<span class='ok'>Dalam kapasitas</span>"):'-';
+    s.dataset.raw=ok?(over?'Melebihi kapasitas':'Dalam kapasitas'):'';
+  });
+}
+$('uc').addEventListener('input',e=>{
+  const t=e.target,k=t.dataset.uk;
+  if(k){const p=up[+t.dataset.j];if(k==='v')p.v[+t.dataset.lid]=+t.value||0;else p[k]=k==='n'?t.value:(+t.value||0);updU();return}
+  if(t.dataset.ul)ul.find(l=>l.id===+t.dataset.ul).name=t.value;
+});
+$('uc').addEventListener('click',e=>{
+  const t=e.target,d=t.dataset.udel,a=t.dataset.uadd;
+  if(d!==undefined){ul=ul.filter(l=>l.id!==+d);buildU()}
+  else if(a){ul.push({id:++uid,g:a,name:UNEW[a]});buildU()}
+});
+$('ut_add').onclick=()=>{const l=up[up.length-1];if(!l)return;up.push(Object.assign({},l,{n:'Periode baru',v:Object.assign({},l.v)}));buildU()};
+$('ut_del').onclick=()=>{up.pop();buildU()};
+$('ut_demo').onclick=()=>{loadU();$('ut_msg').textContent='Contoh dimuat dari template Utilisasi PKS.'};
+$('ut_cp').onclick=()=>copyT('ut_t',null,false,'ut_msg');
+loadU();
+
+/* ===== 4. Rekap penjualan ===== */
+const SK=['n','ct','cn','pt','pn','tt','tn'];
+const SD=[['2021',88531,1008386,17978,136501,0,0],['2022',80466,977316,15544,117366,5447,8997],['2023',92255,996024,18760,93927,10370,20255],['2024',53817,688733,11381,88304,0,0],['Jun-25',32016,450440,6659,76780,0,0],['Jun-26',30802,448915,6888.72,88318,0,0]];
+let sl=[];
+const mkS=(a,c)=>{const o={id:++uid,cmp:c||0};SK.forEach((k,i)=>o[k]=a[i]);return o};
+function loadS(){sl=SD.map(a=>mkS(a,0));sl.forEach((r,i)=>{r.cmp=(i===0||i===4)?0:sl[i===5?4:i-1].id});buildS()}
+const gr=(c,b)=>b>0?(c/b-1)*100:NaN;
+function buildS(){
+  $('sl_t').innerHTML=sl.map(r=>{
+    const inp=(k,w)=>`<td><input type='number' step='any' data-sk='${k}' value='${r[k]}' style='width:${w}px'></td>`;
+    const a=k=>`<td class='a' data-s='${k}'></td>`;
+    return `<tr data-sid='${r.id}'><td><input type='text' data-sk='n' value='${esc(r.n)}' style='width:90px;text-align:center'></td>${inp('ct',90)}${inp('cn',105)}${a('hc')}${a('gc')}${inp('pt',90)}${inp('pn',105)}${a('hp')}${a('gp')}${inp('tt',90)}${inp('tn',105)}${a('ht')}${a('gtb')}${a('tot')}${a('gt')}<td><select data-sk='cmp'></select></td><td class='c'><button class='x' data-sdel='${r.id}'>✕</button></td></tr>`;
+  }).join('');
+  updS();
+}
+function updS(){
+  [...$('sl_t').rows].forEach(tr=>{
+    const r=sl.find(x=>x.id===+tr.dataset.sid),b=sl.find(x=>x.id===r.cmp);
+    const g=k=>tr.querySelector(`[data-s='${k}']`);
+    const h=(n,t)=>t>0&&n>0?n*1000/t:NaN;
+    setA(g('hc'),h(r.cn,r.ct),0);setA(g('hp'),h(r.pn,r.pt),0);setA(g('ht'),h(r.tn,r.tt),0);
+    setG(g('gc'),b?gr(r.cn,b.cn):NaN);setG(g('gp'),b?gr(r.pn,b.pn):NaN);setG(g('gtb'),b?gr(r.tn,b.tn):NaN);
+    const tot=r.cn+r.pn+r.tn;
+    setA(g('tot'),tot,0);setG(g('gt'),b?gr(tot,b.cn+b.pn+b.tn):NaN);
+    const sel=tr.querySelector('select');
+    if(document.activeElement!==sel){sel.innerHTML="<option value='0'>- tanpa pembanding</option>"+sl.filter(x=>x!==r).map(x=>`<option value='${x.id}'>${esc(x.n||'(tanpa nama)')}</option>`).join('');sel.value=r.cmp}
+  });
+}
+$('rj').addEventListener('input',e=>{const t=e.target,k=t.dataset.sk;if(!k)return;const r=sl.find(x=>x.id===+t.closest('tr').dataset.sid);r[k]=k==='n'?t.value:(+t.value||0);updS()});
+$('sl_t').addEventListener('click',e=>{const d=e.target.dataset.sdel;if(d===undefined)return;const id=+d;sl=sl.filter(x=>x.id!==id);sl.forEach(x=>{if(x.cmp===id)x.cmp=0});buildS()});
+$('sl_add').onclick=()=>{const l=sl[sl.length-1];sl.push(mkS(['Periode baru',0,0,0,0,0,0],l?l.id:0));buildS()};
+$('sl_demo').onclick=()=>{loadS();$('sl_msg').textContent='Contoh dimuat dari template rekap penjualan.'};
+$('sl_cp').onclick=()=>copyT('sl_t',['Periode','CPO Tonase','CPO Nilai (Rp juta)','CPO Harga (Rp/kg)','Growth CPO','PK Tonase','PK Nilai (Rp juta)','PK Harga (Rp/kg)','Growth PK','TBS Tonase','TBS Nilai (Rp juta)','TBS Harga (Rp/kg)','Growth TBS','Total Penjualan (Rp juta)','Growth Total','Growth dibanding'],true,'sl_msg');
+loadS();
+</script>
+</body>
+</html>
